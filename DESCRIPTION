@@ -1,0 +1,15 @@
+Package: metaboraid
+Title: Multi-search engine metabolomics identification
+Version: 1.0.0.0
+Authors@R: 
+    person(given = "Payam",
+           family = "Emami",
+           role = c("aut", "cre"),
+           email = "payam.emami@scilifelab.se",
+           comment = c(ORCID = ""))
+Description: metaboraid is used to post-process CAMERA data and integrate with MS2 data. It includes various search engines to do metabolomics identification.
+License: use_mit_license()
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
