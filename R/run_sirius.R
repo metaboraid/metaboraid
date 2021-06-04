@@ -220,7 +220,6 @@ run_sirius<-function(parameter_zip_files=NA,database=NA,local_database=NA,number
   # }
 
 
-  progressr::handlers(global = TRUE)
   results<-NA
   if(!is.na(results_folder))
   {
@@ -340,7 +339,6 @@ if(progress_bar==TRUE)
 
   number_if_success<-sum(unlist(sapply(results,nrow))>0)
 
-  print(number_if_success)
   if(length(number_if_success)>0)
   {
     return(do.call(rbind,results[!is.na(results)]))

@@ -62,7 +62,7 @@
 #' final_results<-metaboraid:::map_to_camera(input_camera = anFA,identification_result = ID_results,ppm = 10,rt = 10,higher_the_better = T,score_column = "SiriusScore",impute = F,mapping_method = "fast")
 #'
 #' @return
-#' A list with two elements: peakMatrix, variableData. peakMatrix contains the peak information from CAMERA and variableData includes the identification information. The row names of these two data.frame are identical.
+#' A list with two elements: peakMatrix, variableData. peakMatrix contains the peak information from CAMERA and variableData includes the identification information. The first columns of the both matrices are the key to match these two dataframes.
 #'
 #' @details
 #' This is normally the last function applied on the data. The purpose of this function is to provide ready to analyze data by simply finding the identified features.

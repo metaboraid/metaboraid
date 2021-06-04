@@ -39,7 +39,7 @@ map_to_camera(
 \item{verbose}{Show information about different stages of the processes. Default FALSE}
 }
 \value{
-A list with two elements: peakMatrix, variableData. peakMatrix contains the peak information from CAMERA and variableData includes the identification information. The row names of these two data.frame are identical.
+A list with two elements: peakMatrix, variableData. peakMatrix contains the peak information from CAMERA and variableData includes the identification information. The first columns of the both matrices are the key to match these two dataframes.
 }
 \description{
 This function allows you to map the identification results to quantification data from CAMERA.

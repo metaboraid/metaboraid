@@ -18,8 +18,37 @@
 #' @param verbose Show information about different stages of the processes. Default FALSE
 #' @export
 #' @examples
-#' mapped_ms2s<-map_features(inputMS2s = c("data/Pilot_MS_Control_2_peakpicked.mzML","data/Pilot_MS_Pool_2_peakpicked.mzML"),input_camera = camera_results)
-#' preprocess_msms(mapped_ms2s)
+#'
+#' library(CAMERA)
+#' library(metaboraid)
+#' # Read MS1 and MS2 files
+#' ms1_files<-system.file("ms1data",c("X1_Rep1.mzML","X2_Rep1.mzML"),package = "metaboraid")
+#' ms2_files<-system.file("ms2data",c("sample1.mzML","sample2.mzML"),package = "metaboraid")
+#'
+#' # mass trace detection
+#' xs <- xcmsSet(ms1_files,method="centWave",ppm=30,peakwidth=c(5,10))
+#'
+#' # mass trace matching
+#' xsg <- group(xs)
+#'
+#' # convert to CAMERA
+#' xsa <- xsAnnotate(xsg)
+#'
+#' # Group mass traces
+#' anF <- groupFWHM(xsa, perfwhm = 0.6)
+#'
+#' # Detect isotopes
+#' anI <- findIsotopes(anF, mzabs = 0.01)
+#'
+#' # Group using correlation
+#' anIC <- groupCorr(anI, cor_eic_th = 0.75)
+#'
+#' # Find adducts
+#' anFA <- findAdducts(anIC, polarity="positive")
+#'
+#' # map features and MS2s
+#' mapped_features<-map_features(inputMS2s = ms2_files,input_camera = anFA,ppm = 10,rt = 10)
+#' preprocess_msms(mapped_features)
 #'
 #'
 #' @return

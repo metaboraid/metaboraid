@@ -248,10 +248,10 @@ if(is.na(cfm_bin)|is.null(cfm_bin)){
   }
 
   if(progress_bar==TRUE)
-    p <- progressr::progressor(along =  all_params[1:50])
+    p <- progressr::progressor(along =  all_params)
 
   library(future.apply)
-  results<-  future_lapply(all_params[1:50],function(par_file) {
+  results<-  future_lapply(all_params,function(par_file) {
 
     command_cfm<-readLines(par_file)
     splitParams<-strsplit(command_cfm,split = " ",fixed = T)

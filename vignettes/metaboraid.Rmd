@@ -1,0 +1,314 @@
+---
+title: "Metabolite identification using MetaboRAID"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{metaboraid}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Motivation
+
+Metabolite identification in untargeted experiments is still a key and often the most difficult data processing step in mass spectrometry-based experiments. Recently there has been a tremendous effort by the community to develop new approaches for the identification of unknowns which has led to the development of various different software packages for annotation unknown features. The two most common approaches for identification are based on in-silico and internal library search. These two approaches are based on MS/MS (MS2) fragmentation pattern. The in-silico approach attempts to reconstruct the molecules based on experimental MS/MS and compare the results to a database. Whereas the library-based approach most deals with comparing MS/MS spectra of the molecule of interest to generated spectra of the standard compound. MetaboRAID deals with the in-silico and attempts to provide a unified platform for performing identification using various search engines.
+
+# Pipeline
+
+A typical mass spectrometry data processing often includes a multitude of steps including centroiding, feature detection, annotation, MS/MS processing and identification. In a typical scenario, one would start MS1 data pre-processing and proceed to MS2. In R, two of the famous packages for MS1 quantification and annotation are xcms and CAMERA. After data doing the MS1 pre-processing, it is the time to deal with MS/MS spectra. Different tools require different set of parameters and often different data preparation steps, making time consuming for running the identification analysis. MetaboRAID accepts MS2 spectra and MS1 data pre-treated with xcms and CAMERA and performs MS2 pre-processing and identification. 
+
+Here we demonstrate how to perform a simple identification using a small dataset.
+
+## Install the package and the tools
+
+In order to use the search engines, they have to be installed. To install the search engines you need to use *install_tools* function. Before running it, make sure that you have the latest conda avaialble. Conda can be installed on Windows, IOS and Linux. When installed, rerun R and start from here.
+
+
+```{r eval=FALSE}
+
+library(metaboraid)
+install_tools()
+
+```
+
+We use conda for installing the packages. An environment will be created and all the required tools will be installed in that environemnt. After that you can continue with your analysis.
+
+## MS1 quantification
+
+First load CAMERA and metaboraid and read the MS1 data. **You need to convert you "raw" data to mzML file both for MS1 and MS2**
+```{r}
+
+library(CAMERA)
+library(metaboraid)
+
+
+# Read MS1
+ms1_files<-system.file("ms1data",c("X1_Rep1.mzML","X2_Rep1.mzML"),package = "metaboraid")
+
+print(ms1_files)
+```
+
+We can now go ahead and do a typical xcms and CAMERA data pre-processing which includes:
+
+1. Mass trace detection
+2. Mass trace grouping
+3. Converting to CAMERA object
+4. Grouping mass tracing into PC groups
+5. Finding Isoptopes
+6. Rearrange the grouping
+7. Adduct detection
+
+
+```{r warning=FALSE,results='hide'}
+
+# 1. mass trace detection
+xs <- xcmsSet(ms1_files,method="centWave",ppm=30,peakwidth=c(5,10))
+
+# 2. mass trace matching
+xsg <- group(xs)
+
+# 3. convert to CAMERA
+xsa <- xsAnnotate(xsg)
+
+# 4. Group mass traces
+anF <- groupFWHM(xsa, perfwhm = 0.6)
+
+# 5. Detect isotopes
+anI <- findIsotopes(anF, mzabs = 0.01)
+
+# 6. Group using correlation
+anIC <- groupCorr(anI, cor_eic_th = 0.75)
+
+# 7. Find adducts
+anFA <- findAdducts(anIC, polarity="positive")
+
+```
+
+At this stage we have the quantification analysis done. We are ready to proceed to the identification step. **Please note that, steps 5 and 7 are required in the next steps. So make sure that you have done the isotope and adduct detection.**
+
+## MS2 loading and mapping
+
+Now it is the time to load our MS2 data. Our *ms2_files* variable contains a vector of paths for the location of MS2 mzML files.  
+
+```{r}
+# Read MS2 data
+ms2_files<-system.file("ms2data",c("sample1.mzML","sample2.mzML"),package = "metaboraid")
+
+print(ms2_files)
+```
+
+
+Where we have our file paths in *ms2_files* we can use *mapped_features* function to read MS2 files and map the MS2 parent ions onto the features detected by xcms/CAMERA. We do that to be able to later detect adducts and also merge related MS2 peaks. 
+
+Here we set mz and retention time deviation for mapping to 10 ppm and 10 seconds.
+
+```{r warning=FALSE,results='hide'}
+
+mapped_features<-map_features(inputMS2s = ms2_files,input_camera = anFA,ppm = 10,rt = 10)
+
+```
+
+
+After this step we have all the mapped and unmapped MS2s in *mapped_features*. This variable is a simple nested list. With two names:
+
+
+```{r warning=F}
+names(mapped_features)
+```
+
+The *mapped* element is a nested list in which all the MS2s that had a corresponding feature in MS1 data are stored. 
+
+The name of each element of the first level correspond to the index of a feature in the CAMERA object:
+
+
+```{r warning=F}
+
+CAMERA_peaks<-getPeaklist(anFA)
+
+all_index<-names(mapped_features$mapped)
+
+print(CAMERA_peaks[as.numeric(all_index[6]),])
+
+```
+The second level list contains all the MS2s for a particular feature:
+
+
+```{r warning=F}
+print(mapped_features$mapped[[6]])
+
+plots_MS2s<-lapply(mapped_features$mapped[[6]],plot,plot=F)
+
+cowplot::plot_grid(plotlist = plots_MS2s)
+```
+
+At this stage we have the quantification analysis done. We are ready to proceed to the identification step. **Please note that, steps 5 and 7 are required in the next steps. So make sure that you have done the isotope and adduct detection.**
+
+## MS2 loading and mapping
+
+Now it is the time to load our MS2 data. Our *ms2_files* variable contains a vector of paths for the location of MS2 mzML files.  
+
+```{r}
+# Read MS2 data
+ms2_files<-system.file("ms2data",c("sample1.mzML","sample2.mzML"),package = "metaboraid")
+
+print(ms2_files)
+```
+
+
+Where we have our file paths in *ms2_files* we can use *mapped_features* function to read MS2 files and map the MS2 parent ions onto the features detected by xcms/CAMERA. We do that to be able to later detect adducts and also merge related MS2 peaks. 
+
+Here we set mz and retention time deviation for mapping to 10 ppm and 10 seconds.
+
+```{r warning=FALSE,results='hide'}
+
+mapped_features<-map_features(inputMS2s = ms2_files,input_camera = anFA,ppm = 10,rt = 10)
+
+```
+
+
+After this step we have all the mapped and unmapped MS2s in *mapped_features*. This variable is a simple nested list. With two names:
+
+
+```{r warning=F}
+names(mapped_features)
+```
+
+The *mapped* element is a nested list in which all the MS2s that had a corresponding feature in MS1 data are stored. 
+
+The name of each element of the first level correspond to the index of a feature in the CAMERA object:
+
+
+```{r warning=F}
+
+CAMERA_peaks<-getPeaklist(anFA)
+
+all_index<-names(mapped_features$mapped)
+
+print(CAMERA_peaks[as.numeric(all_index[6]),])
+
+```
+The second level list contains all the MS2s for a particular feature:
+
+
+```{r warning=F}
+print(mapped_features$mapped[[6]])
+
+plots_MS2s<-lapply(mapped_features$mapped[[6]],plot,plot=F)
+
+cowplot::plot_grid(plotlist = plots_MS2s)
+```
+
+So this particular MS1 feature has two MS2s associated with it. The unmapped element of the list contains all other MS2s that did not get a feature.
+
+## Pre-process MS2 data (optional)
+
+MS2 data can be noisy and sparse. Often multiple ions from the same precursor are picked by the instrument to fragment. MetaboRAID has the option to merge and pre-process the mapped ions. 
+
+If order to do merge, we use *preprocess_msms* which provides the centroiding and merging options both for mapped and unmapped ions. 
+
+```{r warning=F}
+
+mapped_features_merge<-preprocess_msms(mapped_features,centroid = F,merge = T,centroid_after_merge = F,ppm = 10,ppm_precursor = 5,rt = 10,abs_mz_precursor = 0.01,abs_mz = 0.05)
+```
+
+We can see that the spectra is now merge and contains more peaks but the redundant ones have been merge into single peaks. 
+
+```{r warning=F}
+
+plots_MS2s_merge<-lapply(mapped_features_merge$mapped[[6]],plot,plot=F)
+
+cowplot::plot_grid(plotlist = plots_MS2s_merge)
+```
+
+
+At this stage we could use *plots_MS2s_merge* instead of *mapped_features* throughout the rest of analysis but we choose to do go with *mapped_features* just to show the standard behaviour of the package. 
+
+
+## Neutral mass estimation
+
+After this step we go ahead and perform neutral mass estimation.  We do that to decrease the search space of the proceeding search engines. The way that neutral mass estimation works is to first find out if a MS2 has a feature and that feature is an adduct or has been annotated with isotope information by CAMERA. If so, the neutral mass is deduced by taking the adduct and isotope information into account. If the MS2 does not have adducts or not even a feature, depending on the user choice we generate a set of possible adducts for this MS2 So effectively the MS2 will be search multiple times. 
+
+All of these are achieved using *mapped_adducts* function. In this function, we need to input the list of MS2s as generated by *mapped_features*, CAMERA quantification object, precursor and fragment mass devation as well as ionization, addcut rules and other parameters that later will be used by the search engine to perform the search. So this is important to note that the deviation parameters will be used by search engines not for mapping.
+
+Two important parameters here are *searchMultipleChargeAdducts* which force MetaboRAID to generate multiple adducts for a MS2 if it we did not find an adduct for it.
+The other parameter to consider is outputDir, you need to make sure that you set this parameter everytime to a different directory so the result of the previous run won't be overwritten. 
+
+```{r warning=F}
+
+mapped_adducts<-map_adducts(inputMS2List=mapped_features,input_camera=anFA,
+                   precursorppm=10,
+                  fragmentppm=20,fragmentabs=0.01,minPrecursorMass=NA,maxPrecursorMass=NA,
+                   minPeaks=10,maxSpectra=10,mode="pos",adductRules="primary",
+                  outputDir="general_parameters",searchMultipleChargeAdducts=T,
+                   includeMapped=T,includeUnmapped=F,verbose=F)
+```
+
+This function will generate a file called *parameter_files.zip* which can be passed to all the search engines. This files contains all the parameters that generated and put in *outputDir*.
+
+## Identification
+
+We are now ready to perform the identification. We demostrate CSI-FINGERID here:
+
+```{r warning=F,results='hide',echo=FALSE}
+
+ID_results<-run_sirius("parameter_files.zip",database = "all",ncores = 2,progress_bar = F,verbose = F,results_folder = "results",chech_file_interval = 2,timeout = 600,conda = "auto")
+```
+The results is a data.frame of CSI-FINGERID results:
+
+```{r warning=F,results='hide',echo=FALSE}
+
+head(ID_results)
+```
+We can instead also run another search engine. Let's try the above using Metfrag:
+
+```{r warning=F,results='hide',echo=FALSE}
+
+ID_results_metfrag<-run_metfrag("parameter_files.zip",database = "PubChem",ncores = 2,progress_bar = F,verbose = F,results_folder = "results_metfrag",chech_file_interval = 2,timeout = 600,conda = "auto")
+```
+
+```{r warning=F,results='hide',echo=FALSE}
+
+head(ID_results_metfrag)
+```
+
+## Mapping to quantification
+
+The last stage of the processing is to map identified metabolites to quantification data. We can do this using *map_to_camera* function. This function accepts the scores and CAMERA object as well as mass and retention time deviation and maps the identification results to quantification. 
+
+```{r warning=F}
+final_results<-metaboraid:::map_to_camera(input_camera = anFA,identification_result = ID_results_metfrag,ppm = 10,rt = 10,higher_the_better = T,score_column = "OfflineMetFusionScore",impute = F,mapping_method = "fast")
+```
+
+The results of this function is a list with two elements:
+
+```{r warning=F}
+names(final_results)
+```
+The *peakMatrix* contains the quantification from CAMERA
+
+```{r warning=F}
+head(final_results$peakMatrix)
+```
+
+And *variableData* data contains the identification results. 
+
+```{r warning=F}
+head(final_results$variableData)
+```
+
+The first columns of the both matrices are the key to match these two dataframes.
+
+```{r warning=F}
+all(final_results$peakMatrix[,1]==final_results$variableData[,1])
+```
+
+At this stage one can go ahead with the statistical or pathway analysis depending on specific needs of the project.
+
+```{r warning=F}
+sessionInfo()
+```
