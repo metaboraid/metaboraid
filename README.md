@@ -6,13 +6,17 @@ In order to install MetaboRAID, first make sure you have devtools installed in R
 
 ```r
 install.packages("devtools")
+install.packages("BiocManager")
+BiocManager::install("CAMERA")
 ```
 
 Then run:
 
 ```r
 library(devtools)
+library(CAMERA)
 install_github("metaboraid/metaboraid")
+library(metaboraid)
 ```
 
 MetaboRAID requires certain tools that need to be installed before running the analysis. You need to [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) available on the system.
