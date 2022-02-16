@@ -10,20 +10,30 @@ install.packages("BiocManager")
 BiocManager::install("CAMERA")
 ```
 
+Install the latest stable version of gfortran for your macOS from:
+
+```r
+https://gcc.gnu.org/wiki/GFortranBinaries
+```
+
 Then run:
 
 ```r
 library(devtools)
 library(CAMERA)
-install_github("metaboraid/metaboraid")
-library(metaboraid)
 ```
 
-MetaboRAID requires certain tools that need to be installed before running the analysis. You need to [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) available on the system.
+MetaboRAID requires certain tools that need to be installed before running the analysis. You need to have [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) available on the system. If you already have conda on your system, make sure to update it before the following steps:
+```bash
+conda update conda
+```
 
-When you have it. Switch to R and run:
+
+Now, Switch to R and run:
 
 ```r
+install_github("metaboraid/metaboraid")
+library(metaboraid)
 metaboraid::install_tools()
 ```
 
