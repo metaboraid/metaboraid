@@ -20,6 +20,11 @@ Install the latest stable version of gfortran for your macOS from:
 https://gcc.gnu.org/wiki/GFortranBinaries
 ```
 
+On Linux, install libnetcdf-dev. For example in Ubuntu terminal:
+```bash
+sudo apt install libnetcdf-dev
+```
+
 Then run:
 
 ```r
