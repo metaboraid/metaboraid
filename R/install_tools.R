@@ -3,7 +3,7 @@
 #' This function allows you to install the tools needed for MetaboRAID.
 #' We use conda to install the tools so make sure you have the latest version conda installed (\url{https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html}).
 #'
-#' At this stage, CSI-FINGERID, Metfrag and Chemdistiller can be installed on Linux, IOS and Windows however, you should install CFM-ID yourself (\url{https://cfmid.wishartlab.com/})
+#' At this stage, CSI-FINGERID, Metfrag and Chemdistiller can be installed on Linux, macOS and Windows however, you should install CFM-ID yourself (\url{https://cfmid.wishartlab.com/})
 #'
 #' We install everything in metaboraid_package environment. However, CFM-ID will be installed in a different environment.
 #'
@@ -57,6 +57,7 @@ install_tools <- function(method = c("conda"),
 
   reticulate::conda_create(
     envname = "metaboraid_package",
+    #python_version = "3.8" #worked for Ubuntu in case there are conda package version conflicts
     packages = "python",
     forge = TRUE,
     channel = character(),
