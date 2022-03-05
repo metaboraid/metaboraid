@@ -6,8 +6,12 @@ In order to install MetaboRAID, first make sure you have devtools installed in R
 
 ```r
 install.packages("devtools")
+install.packages("reticulate")
+install.packages("remotes")
 install.packages("BiocManager")
 BiocManager::install("CAMERA")
+install.packages("progressr")
+install.packages("doFuture")
 ```
 
 Install the latest stable version of gfortran for your macOS from:
@@ -42,6 +46,7 @@ An environment will be created and all the required tools will be installed in t
 you are now ready to start the analysis.
 
 Alternatively you can do this manually by first creating an environment called `metaboraid_package`:
+
 
 ```bash
 conda create -n  metaboraid_package
