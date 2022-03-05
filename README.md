@@ -21,6 +21,7 @@ https://gcc.gnu.org/wiki/GFortranBinaries
 ```
 
 On Linux, install libnetcdf-dev. For example in Ubuntu terminal:
+
 ```bash
 sudo apt install libnetcdf-dev
 ```
