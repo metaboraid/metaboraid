@@ -59,13 +59,13 @@
 #' mapped_adducts<-map_adducts(inputMS2List=mapped_features,input_camera=anFA,
 #'                             precursorppm=10,
 #'                             fragmentppm=20,fragmentabs=0.01,minPrecursorMass=NA,maxPrecursorMass=NA,
-#'                             minPeaks=10,maxSpectra=10,mode="pos",adductRules="primary",
+#'                             minPeaks=10,maxSpectra=100,mode="pos",adductRules="primary",
 #'                             outputDir="general_parameters_4",searchMultipleChargeAdducts=T,
 #'                             includeMapped=T,includeUnmapped=F,verbose=T)
 #'
 #' # Run the search
 #'
-#' run_metfrag("parameter_files.zip",database = "KEGG",ncores = 2,progress_bar = F,verbose = T,results_folder = "pp",chech_file_interval = 2,timeout = 600,conda = "auto")
+#' run_metfrag("parameter_files.zip",database = "PubChem",ncores = 2,progress_bar = F,verbose = T,results_folder = "pp",chech_file_interval = 2,timeout = 600,conda = "auto")
 #'
 #' @return
 #' A dataframe containing the identified ions. The dataframe contains search engine and database specific information but also tree important columns: parentMZ, parentRT, fileName which are used to trace the ions by the downstream processes.
