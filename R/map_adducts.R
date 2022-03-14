@@ -150,9 +150,20 @@ map_adducts<-function(inputMS2List=NA,input_camera=NA,
                    minPrecursorMass = minPrecursorMass, mode = mode, primary = (adductRules == "primary"))
   if(verbose)cat("\nAdduct estimating has been done ...","\n")
   if(verbose)cat("\nCompressing the results ...","\n")
+  
+  ## Saman: correcting precursor ion type from [...]n+ into [...]+ 
+  fl <- list.files(path = outputDir,pattern = "*.txt", full.names = TRUE, recursive = FALSE)  
+  lapply(fl, function(f)  {
+    tst <- readLines(f)
+    #tst
+    #str_view_all(tst, "]\\d*\\+")
+    tst2 <- gsub("](\\d*|\\w*|\\W*)\\+", "]+", tst)
+    writeLines(tst2, as.character(f))
+  }
+  )
 
   zip::zip(zipfile="parameter_files.zip",files=list.files(path = outputDir,pattern="txt",full.names = T),include_directories = F)
   if(verbose)cat("\nCompressing the results has been doen ...","\n")
-  if(verbose)cat("\nThe parameter file is: ",list.files(pattern = "parameter_files.zip",full.names = T),"\n")
-  return(list.files(pattern = "parameter_files.zip",full.names = T))
+  if(verbose)cat("\nThe parameter file is: ",list.files(pattern = "^parameter_files.zip",full.names = T),"\n")
+  return(list.files(pattern = "^parameter_files.zip",full.names = T))  # to avoid printing test_parameter_files.zip
 }
