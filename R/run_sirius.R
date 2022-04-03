@@ -25,6 +25,7 @@
 #' @param total_check_time not used
 #' @param timeout The maximum number of seconds to wait for a single out to give a result. Default 600
 #' @param timeout_tree the number of seconds to wait for tree computation 0= unlimited. Default 0
+#' @param only_top Return only the top candidate. Default TRUE
 #' @export
 #' @examples
 #'
@@ -82,7 +83,7 @@
 run_sirius<-function(parameter_zip_files=NA,database=NA,local_database=NA,number_of_compounds_for_ion=1,number_of_compounds=10,
                      use_heuristic=T,mz_to_use_heuristic_only=650,mz_to_use_heuristic=300,
                      ncores=1,progress_bar=F,verbose=F,conda = "auto",env="metaboraid_package",results_folder=NA,
-                      chech_file_interval=2,total_check_time=20,timeout=600,timeout_tree=0){
+                      chech_file_interval=2,total_check_time=20,timeout=600,timeout_tree=0,only_top=TRUE){
   if(verbose)cat("\nChecking software ...","\n")
   check_if_conda_is_installed(pkg = env,conda=conda)
   check_out<-suppressWarnings(check_if_software_exist("sirius",conda=conda))
@@ -302,10 +303,22 @@ if(progress_bar==TRUE)
       out_sirius<-system2(conda_path, c(main_params,"sirius",
                                          (toCSICommand)),stdout =T ,wait = T,stderr = T,timeout = timeout)
 
-      required_output<-paste(sirius_folder,"/","compound_identifications.tsv",sep = "")
-
-
-
+     dir_list<-list.dirs(sirius_folder,
+            recursive = F,full.names = T)
+      
+    if(sum(grepl(dir_list,pattern = "toCSI"))>1){
+    stop("More than one CSI outputs! something went wrong!")
+    }
+    cid <- dir_list[grepl(dir_list,pattern = "toCSI")]
+     
+      if(only_top==FALSE)
+        {
+        required_output<-paste(cid,"/","structure_candidates.tsv",sep = "")
+        }else{
+        required_output<-paste(sirius_folder,"/","compound_identifications.tsv",sep = "")
+        }
+    
+  
       data_res<-NA
 
       if(file.exists(required_output))
