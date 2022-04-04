@@ -167,9 +167,9 @@ map_to_camera<-function(input_camera=NA,
     stop("higher_the_better must be either TRUE or FALSE!")
   }
 
-  if(verbose)cat("Extracting peak list ...","\n")
-  cameraInformation<-cameraPeakList[,c("mz","mzmin","mzmax","rt","rtmin","rtmax","npeaks","isotopes","adduct","pcgroup")]
-  colnames(cameraInformation)<-paste("xcmsCamera_",colnames(cameraInformation),sep = "")
+  #if(verbose)cat("Extracting peak list ...","\n")
+  #cameraInformation<-cameraPeakList[,c("mz","mzmin","mzmax","rt","rtmin","rtmax","npeaks","isotopes","adduct","pcgroup")]
+  #colnames(cameraInformation)<-paste("xcmsCamera_",colnames(cameraInformation),sep = "")
 
 
   if(verbose)cat("Mapping ...","\n")
