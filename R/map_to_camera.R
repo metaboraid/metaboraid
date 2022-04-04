@@ -107,11 +107,11 @@ map_to_camera<-function(input_camera=NA,
   }
 
   cameraPeakList<-CAMERA::getPeaklist(input_camera)
-  if(any(!c("mz","mzmin","mzmax","rt","rtmin","rtmax","npeaks","isotopes","adduct","pcgroup")%in%colnames(cameraPeakList)))
-  {
-    stop("CAMERA object must contain at least mz, mzmin, mzmax, rt, rtmin, rtmax, npeaks, isotopes, adduct, and pcgroup! Remember to run grouping, isotope and adduct detection using CAMERA before using this function!")
+  #if(any(!c("mz","mzmin","mzmax","rt","rtmin","rtmax","npeaks","isotopes","adduct","pcgroup")%in%colnames(cameraPeakList)))
+  #{
+  #  stop("CAMERA object must contain at least mz, mzmin, mzmax, rt, rtmin, rtmax, npeaks, isotopes, adduct, and pcgroup! Remember to run grouping, isotope and adduct detection using CAMERA before using this function!")
 
-  }
+  #}
 
 
   if(is.na(mapping_method)|is.null(mapping_method))
