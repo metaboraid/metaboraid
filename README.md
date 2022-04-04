@@ -29,12 +29,6 @@ On Linux, install libnetcdf-dev. For example in Ubuntu terminal:
 sudo apt install libnetcdf-dev
 ```
 
-Then run:
-
-```r
-library(devtools)
-library(CAMERA)
-```
 
 MetaboRAID requires certain tools that need to be installed before running the analysis. You need to have [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) available on the system. If you already have conda on your system, make sure to update it before the following steps:
 ```bash
