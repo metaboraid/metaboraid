@@ -2,7 +2,7 @@
 
 MetaboRAID is an R package enabling rapid metabolite identification using mass spectrometry MS1 and MS2 data. MetaboRAID includes functions for estimating adducts, neutral masses, and merging of spectra.
 
-In order to install MetaboRAID, first make sure you have devtools installed in R:
+In order to install MetaboRAID, first make sure you have the following packages installed and loaded in R:
 
 ```r
 install.packages("devtools")
@@ -12,6 +12,9 @@ install.packages("BiocManager")
 BiocManager::install("CAMERA")
 install.packages("progressr")
 install.packages("doFuture")
+install.packages("zip")
+install.packages("intervals")
+install.packages("future.apply")
 ```
 
 Install the latest stable version of gfortran for your macOS from:
