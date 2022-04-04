@@ -150,7 +150,8 @@ map_adducts<-function(inputMS2List=NA,input_camera=NA,
                    minPrecursorMass = minPrecursorMass, mode = mode, primary = (adductRules == "primary"))
   if(verbose)cat("\nAdduct estimating has been done ...","\n")
   if(verbose)cat("\nCompressing the results ...","\n")
-
+  
+  zip_file_name <- readline(prompt="Enter the zipped parameter files name: ")
   zip::zip(zipfile="parameter_files.zip",files=list.files(path = outputDir,pattern="txt",full.names = T),include_directories = F)
   if(verbose)cat("\nCompressing the results has been doen ...","\n")
   if(verbose)cat("\nThe parameter file is: ",list.files(pattern = "parameter_files.zip",full.names = T),"\n")
