@@ -143,8 +143,8 @@ map_adducts<-function(inputMS2List=NA,input_camera=NA,
 
   if(verbose)cat("\nEstimating adducts ...","\n")
   toMetfragCommand(mappedMS2 = inputMS2List$mapped,unmappedMS2 = inputMS2List$unmapped,
-                   cameraObject = input_camera,searchMultipleChargeAdducts = T,includeUnmapped = F,
-                   includeMapped = T,settingsObject = settingsObject,preprocess = F,
+                   cameraObject = input_camera,searchMultipleChargeAdducts = T,includeUnmapped = includeUnmapped,
+                   includeMapped = includeMapped,settingsObject = settingsObject,preprocess = F,
                    savePath=outputDir, minPeaks=minPeaks,
                    maxSpectra=maxSpectra, maxPrecursorMass = maxPrecursorMass,
                    minPrecursorMass = minPrecursorMass, mode = mode, primary = (adductRules == "primary"))
