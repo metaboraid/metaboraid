@@ -1,4 +1,5 @@
 # MetaboRAID
+# Updated version: Jan2023
 
 MetaboRAID is an R package enabling rapid metabolite identification using mass spectrometry MS1 and MS2 data. MetaboRAID includes functions for estimating adducts, neutral masses, and merging of spectra.
 
@@ -16,6 +17,7 @@ install.packages("zip")
 install.packages("intervals")
 install.packages("future.apply")
 ```
+
 
 Install the latest stable version of gfortran for your macOS from:
 
